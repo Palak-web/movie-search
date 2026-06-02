@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, useMemo, memo } from "react"
 
 const API_KEY = "cc446196"
 
@@ -32,7 +32,7 @@ const FALLBACK_POSTERS = [
   "https://image.tmdb.org/t/p/w500/ryZ0Bebg2gSIti8q40XnE03dEQ8.jpg"  // Star Wars
 ]
 
-export default function MovieBanner() {
+export default memo(function MovieBanner() {
   const [posters, setPosters] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -80,6 +80,17 @@ export default function MovieBanner() {
     fetchMovies()
   }, [])
 
+  const rows = useMemo(() => {
+    if (posters.length === 0) return null;
+    return {
+      row1: [...posters].sort(() => Math.random() - 0.5),
+      row2: [...posters].sort(() => Math.random() - 0.5),
+      row3: [...posters].sort(() => Math.random() - 0.5),
+      row4: [...posters].sort(() => Math.random() - 0.5),
+      row5: [...posters].sort(() => Math.random() - 0.5),
+    };
+  }, [posters]);
+
   if (loading) {
     return (
       <div className="fixed inset-0 z-0 flex items-center justify-center bg-[#050505]">
@@ -88,13 +99,7 @@ export default function MovieBanner() {
     )
   }
 
-  if (posters.length === 0) return null
-
-  const row1 = [...posters].sort(() => Math.random() - 0.5)
-  const row2 = [...posters].sort(() => Math.random() - 0.5)
-  const row3 = [...posters].sort(() => Math.random() - 0.5)
-  const row4 = [...posters].sort(() => Math.random() - 0.5)
-  const row5 = [...posters].sort(() => Math.random() - 0.5)
+  if (posters.length === 0 || !rows) return null
 
   return (
     <div className="fixed inset-0 z-0 overflow-hidden bg-[#050505] pointer-events-none">
@@ -102,15 +107,15 @@ export default function MovieBanner() {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-black/20 via-black/40 to-black z-10" />
       
       <div className="absolute inset-0 flex flex-col gap-4 opacity-100 justify-center h-[140vh] -top-[20vh] transform -rotate-12 scale-125">
-        <ScrollRow posters={row1} speed={30} direction={-1} />
-        <ScrollRow posters={row2} speed={45} direction={-1} />
-        <ScrollRow posters={row3} speed={25} direction={-1} />
-        <ScrollRow posters={row4} speed={40} direction={-1} />
-        <ScrollRow posters={row5} speed={35} direction={-1} />
+        <ScrollRow posters={rows.row1} speed={30} direction={-1} />
+        <ScrollRow posters={rows.row2} speed={45} direction={-1} />
+        <ScrollRow posters={rows.row3} speed={25} direction={-1} />
+        <ScrollRow posters={rows.row4} speed={40} direction={-1} />
+        <ScrollRow posters={rows.row5} speed={35} direction={-1} />
       </div>
     </div>
   )
-}
+})
 
 function ScrollRow({ posters, speed, direction }) {
   const ref = useRef(null)
