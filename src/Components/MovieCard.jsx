@@ -54,6 +54,10 @@ export default function MovieCard({ movie, onClick }) {
         <img
           src={movie.Poster !== "N/A" ? movie.Poster : "https://placehold.co/400x600/1e293b/94a3b8?text=No+Poster"}
           alt={movie.Title}
+          onError={(e) => {
+            e.target.onerror = null
+            e.target.src = `https://placehold.co/400x600/1a1a2e/6366f1?text=${encodeURIComponent(movie.Title)}`
+          }}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           loading="lazy"
         />
@@ -72,7 +76,6 @@ export default function MovieCard({ movie, onClick }) {
           )}
         </div>
 
-        {/* Favorite Button */}
         <button 
           onClick={handleFavoriteClick}
           className="absolute top-3 right-3 p-2 bg-black/40 backdrop-blur-md rounded-full border border-white/10 hover:bg-black/60 transition-colors z-10"
