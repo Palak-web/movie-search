@@ -8,6 +8,7 @@ const API_KEY = "cc446196";
 export default function MovieCard({ movie, onClick }) {
   const { toggleFavorite, isFavorite } = useAppContext();
   const [rating, setRating] = useState(null);
+  const [imageError, setImageError] = useState(false);
   const favorite = isFavorite(movie.imdbID);
 
   // Fetch rating for the card since search doesn't return it
@@ -40,6 +41,10 @@ export default function MovieCard({ movie, onClick }) {
     toggleFavorite(movie);
   };
 
+  if (!movie.Poster || movie.Poster === "N/A" || imageError) {
+    return null;
+  }
+
   return (
     <motion.div
       variants={{
@@ -52,12 +57,9 @@ export default function MovieCard({ movie, onClick }) {
     >
       <div className="relative aspect-[2/3] overflow-hidden bg-slate-200 dark:bg-slate-800">
         <img
-          src={movie.Poster !== "N/A" ? movie.Poster : "https://placehold.co/400x600/1e293b/94a3b8?text=No+Poster"}
+          src={movie.Poster}
           alt={movie.Title}
-          onError={(e) => {
-            e.target.onerror = null
-            e.target.src = `https://placehold.co/400x600/1a1a2e/6366f1?text=${encodeURIComponent(movie.Title)}`
-          }}
+          onError={() => setImageError(true)}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           loading="lazy"
         />

@@ -68,3 +68,6 @@ Get your free key at omdbapi.com and replace it in `App.jsx` and `MovieBanner.js
 ## 👩‍💻 Built by
 
 **Palak Verma** — [GitHub](https://github.com/Palak-web)
+
+## 🌐 Live Demo
+https://cinesearch-palak.vercel.app

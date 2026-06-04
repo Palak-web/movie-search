@@ -117,31 +117,42 @@ export default memo(function MovieBanner() {
   )
 })
 
-function ScrollRow({ posters, speed, direction }) {
+function ScrollRow({ posters: initialPosters, speed, direction }) {
   const ref = useRef(null)
+  const [posters, setPosters] = useState(initialPosters)
+  const xRef = useRef(0)
+
+  useEffect(() => {
+    setPosters(initialPosters)
+  }, [initialPosters])
+
   const all = [...posters, ...posters, ...posters, ...posters]
 
   useEffect(() => {
     const el = ref.current
     if (!el || posters.length === 0) return
-    let x = 0, last = performance.now()
+    let last = performance.now()
     let raf
 
     const loop = (now) => {
       const dt = now - last; last = now
-      x += direction * speed * dt / 1000
+      xRef.current += direction * speed * dt / 1000
       
       const singleW = posters.length * 176 
-      if (Math.abs(x) >= singleW) {
-        x -= direction * singleW
+      if (Math.abs(xRef.current) >= singleW) {
+        xRef.current -= direction * singleW
       }
-      el.style.transform = `translateX(${x}px)`
+      el.style.transform = `translateX(${xRef.current}px)`
       raf = requestAnimationFrame(loop)
     }
 
     raf = requestAnimationFrame(loop)
     return () => cancelAnimationFrame(raf)
-  }, [posters, speed, direction])
+  }, [posters.length, speed, direction])
+
+  const handleImageError = (id) => {
+    setPosters(prev => prev.filter(p => p.imdbID !== id));
+  }
 
   return (
     <div ref={ref} className="flex gap-4 w-max">
@@ -150,6 +161,7 @@ function ScrollRow({ posters, speed, direction }) {
           <img
             src={movie.Poster}
             alt=""
+            onError={() => handleImageError(movie.imdbID)}
             className="w-full h-full object-cover transition-all"
           />
         </div>
